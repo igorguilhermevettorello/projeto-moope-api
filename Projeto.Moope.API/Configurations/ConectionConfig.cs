@@ -7,7 +7,7 @@ namespace Projeto.Moope.API.Configurations
     {
         public static IServiceCollection AddConectionConfig(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<AppDbContext>(options =>
                 options.UseMySql(
                     configuration.GetConnectionString("DefaultConnection"),
                     new MySqlServerVersion(new Version(8, 0, 0))

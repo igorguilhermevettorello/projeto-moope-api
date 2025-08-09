@@ -31,7 +31,7 @@ namespace Projeto.Moope.API.Configurations
             //        options.HeartbeatId = "API Fornecedores";
 
             //    })
-            //    .AddCheck("Produtos", new SqlServerHealthCheck(configuration.GetConnectionString("DefaultConnection")))
+            //    .AddCheck("Planos", new SqlServerHealthCheck(configuration.GetConnectionString("DefaultConnection")))
             //    .AddSqlServer(configuration.GetConnectionString("DefaultConnection"), name: "BancoSQL");
 
             //services.AddHealthChecksUI()

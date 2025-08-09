@@ -10,6 +10,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Projeto.Moope.Core", "Projeto.Moope.Core\Projeto.Moope.Core.csproj", "{387F7950-F714-4155-866C-EE735B3AEDC4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "informacoes-gerais", "informacoes-gerais", "{F7CC14AA-709D-444B-85F1-F2D79B797730}"
+	ProjectSection(SolutionItems) = preProject
+		comandos.txt = comandos.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

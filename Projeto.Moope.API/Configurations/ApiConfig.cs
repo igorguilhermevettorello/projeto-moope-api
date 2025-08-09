@@ -16,7 +16,7 @@ namespace Projeto.Moope.API.Configurations
                 options.AddPolicy("CorsPolicy", policy =>
                 {
                     policy
-                        .WithOrigins("*") // Substitua pelo domínio do seu frontend
+                        .WithOrigins("http://localhost:4200") // Substitua pelo domínio do seu frontend
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials(); // Se você precisar de cookies, autenticação, etc.

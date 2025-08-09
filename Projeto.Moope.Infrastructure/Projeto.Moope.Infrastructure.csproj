@@ -18,7 +18,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Migrations\" />
     <Folder Include="Repositories\Base\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Projeto.Moope.Core\Projeto.Moope.Core.csproj" />
   </ItemGroup>
   
 </Project>
