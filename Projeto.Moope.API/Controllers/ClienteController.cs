@@ -226,9 +226,7 @@ namespace Projeto.Moope.API.Controllers
                 if (!rsUsuario.Status) 
                     throw new Exception(rsUsuario.Mensagem);
                 
-                // Atualizar cliente
                 cliente.Id = clienteExistente.Id;
-                // cliente.Usuario = usuario;
                 var rsCliente = await _clienteService.AtualizarAsync(cliente, pessoaFisica, pessoaJuridica);
                 if (!rsCliente.Status) 
                     throw new Exception(rsCliente.Mensagem);

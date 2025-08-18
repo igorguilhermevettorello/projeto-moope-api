@@ -50,3 +50,10 @@ dotnet ef migrations add AtualizarTableFornecedoreEndereco --project ./Projeto.M
 
 dotnet ef migrations add AtualizarTableFornecedoreProduto --project ./Projeto.Moope.Infrastructure/Projeto.Moope.Infrastructure.csproj --startup-project ./Projeto.Moope.Api/Projeto.Moope.Api.csproj --context ApplicationDbContext --output-dir Migrations
 dotnet ef migrations add CorrigirChaveEstrangeiraProdutoFornecedor --project ./Projeto.Moope.Infrastructure/Projeto.Moope.Infrastructure.csproj --startup-project ./Projeto.Moope.Api/Projeto.Moope.Api.csproj --context ApplicationDbContext --output-dir Migrations
+
+
+***************************************************************
+https://docs-celpayments.celcoin.com.br/
+https://app.sandbox.cel.cash/v2/login
+E-mail: webservice@galaxpay.com.br
+Senha: webservice@ 

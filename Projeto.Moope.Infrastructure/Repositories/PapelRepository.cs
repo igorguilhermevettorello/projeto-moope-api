@@ -24,6 +24,13 @@ namespace Projeto.Moope.Infrastructure.Repositories
             return await _context.Papeis.ToListAsync();
         }
 
+        public async Task<IEnumerable<Papel>> BuscarPorUsuarioIdAsync(Guid usuarioId)
+        {
+            return await _context.Papeis
+                .Where(p => p.UsuarioId == usuarioId)
+                .ToListAsync();
+        }
+
         public async Task<Papel> SalvarAsync(Papel entity)
         {
             await _context.Papeis.AddAsync(entity);

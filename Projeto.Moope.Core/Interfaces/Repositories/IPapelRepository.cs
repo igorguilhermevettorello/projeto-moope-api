@@ -5,6 +5,6 @@ namespace Projeto.Moope.Core.Interfaces.Repositories
 {
     public interface IPapelRepository : IRepository<Papel>
     {
-        // Métodos específicos para Pedido
+        Task<IEnumerable<Papel>> BuscarPorUsuarioIdAsync(Guid usuarioId);
     }
 }

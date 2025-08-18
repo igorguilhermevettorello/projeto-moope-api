@@ -209,9 +209,7 @@ namespace Projeto.Moope.API.Controllers
                 if (!rsUsuario.Status) 
                     throw new Exception(rsUsuario.Mensagem);
                 
-                // Atualizar cliente
                 vendedor.Id = vendedorExistente.Id;
-                // cliente.Usuario = usuario;
                 var rsCliente = await _vendedorService.AtualizarAsync(vendedor, pessoaFisica, pessoaJuridica);
                 if (!rsCliente.Status) 
                     throw new Exception(rsCliente.Mensagem);
