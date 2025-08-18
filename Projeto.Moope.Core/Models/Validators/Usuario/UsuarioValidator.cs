@@ -1,5 +1,7 @@
 using FluentValidation;
 using UsuarioModel = Projeto.Moope.Core.Models.Usuario;
+using System.Text.RegularExpressions;
+using Projeto.Moope.Core.Enums;
 
 namespace Projeto.Moope.Core.Models.Validators.Usuario
 {
@@ -12,15 +14,10 @@ namespace Projeto.Moope.Core.Models.Validators.Usuario
                 .Length(2, 200).WithMessage("O campo {PropertyName} precisa ter entre {MinLength} e {MaxLength} caracteres")
                 .OverridePropertyName("Nome");
 
-            RuleFor(c => c.Email)
-                .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido")
-                .EmailAddress().WithMessage("O campo {PropertyName} È inv·lido")
-                .OverridePropertyName("Email");
-
-            RuleFor(c => c.Telefone)
-                .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido")
-                .OverridePropertyName("Telefone");
-
+            RuleFor(x => x.TipoUsuario)
+                .NotNull().WithMessage("Informe o tipo de usu√°rio.")
+                .IsInEnum().WithMessage("Tipo de usu√°rio inv√°lido.")
+                .OverridePropertyName("TipoUsuario");
         }
     }
 }

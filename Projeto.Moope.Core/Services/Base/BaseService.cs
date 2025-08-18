@@ -48,5 +48,7 @@ namespace Projeto.Moope.Core.Services.Base
 
             return false;
         }
+        
+        
     }
 }

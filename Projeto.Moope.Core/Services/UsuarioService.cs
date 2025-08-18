@@ -1,3 +1,4 @@
+using AutoMapper;
 using Projeto.Moope.Core.Interfaces.Notifications;
 using Projeto.Moope.Core.Interfaces.Repositories;
 using Projeto.Moope.Core.Interfaces.Services;
@@ -12,11 +13,17 @@ namespace Projeto.Moope.Core.Services
     public class UsuarioService : BaseService, IUsuarioService
     {
         private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IPapelRepository _papelRepository;
+        private readonly IMapper _mapper;
         public UsuarioService(
             IUsuarioRepository usuarioRepository,
+            IPapelRepository papelRepository,
+            IMapper mapper,
             INotificador notificador) : base(notificador)
         {
             _usuarioRepository = usuarioRepository;
+            _papelRepository = papelRepository;
+            _mapper = mapper;
         }
 
         public async Task<Usuario> BuscarPorIdAsync(Guid id)
@@ -32,17 +39,21 @@ namespace Projeto.Moope.Core.Services
         public async Task<Result<Usuario>> SalvarAsync(Usuario usuario)
         {
             if (!ExecutarValidacao(new UsuarioValidator(), usuario))
-            {
-                return new Result<Usuario>()
-                {
-                    Status = false
-                };
-            }
+                return new Result<Usuario>() { Status = false, Mensagem = "Dados do usuário são inválidos"};
 
+            usuario.Created = DateTime.UtcNow;
             var entity = await _usuarioRepository.SalvarAsync(usuario);
+            
+            await _papelRepository.SalvarAsync(new Papel()
+            {
+                Usuario = usuario,
+                TipoUsuario = usuario.TipoUsuario,
+                Created = DateTime.UtcNow
+            });
+            
             return new Result<Usuario>()
             {
-                Status = false,
+                Status = true,
                 Dados = entity
             };
         }
@@ -50,17 +61,20 @@ namespace Projeto.Moope.Core.Services
         public async Task<Result<Usuario>> AtualizarAsync(Usuario usuario)
         {
             if(!ExecutarValidacao(new UsuarioValidator(), usuario))
-            {
-                return new Result<Usuario>()
-                {
-                    Status = false
-                };
-            }
-
-            var entity = await _usuarioRepository.AtualizarAsync(usuario);
+                return new Result<Usuario>() { Status = false };
+            
+            var usuarioAtual = await _usuarioRepository.BuscarPorIdAsync(usuario.Id);
+            if (usuarioAtual == null)
+                return new Result<Usuario> { Status = false, Mensagem = "Usuário não encontrado" };
+            
+            usuarioAtual.Nome = usuario.Nome;
+            usuarioAtual.TipoUsuario = usuario.TipoUsuario;
+            usuarioAtual.Updated = DateTime.UtcNow;
+            
+            var entity = await _usuarioRepository.AtualizarAsync(usuarioAtual);
             return new Result<Usuario>()
             {
-                Status = false,
+                Status = true,
                 Dados = entity
             };
         }
@@ -69,6 +83,11 @@ namespace Projeto.Moope.Core.Services
         {
             await _usuarioRepository.RemoverAsync(id);
             return true;
+        }
+
+        public async Task<Usuario> BuscarPorIdAsNotrackingAsync(Guid id)
+        {
+            return await _usuarioRepository.BuscarPorIdAsNotrackingAsync(id);
         }
     }
 } 

@@ -17,8 +17,8 @@ namespace Projeto.Moope.API.DTOs.Clientes
         [Documento("TipoPessoa")]
         public string CpfCnpj { get; set; }
 
-        [Required(ErrorMessage = "O campo Celular é obrigatório")]
-        public string Celular { get; set; }
+        [Required(ErrorMessage = "O campo Telefone é obrigatório")]
+        public string Telefone { get; set; }
 
         [Required(ErrorMessage = "O campo TipoPessoa é obrigatório")]
         public TipoPessoa TipoPessoa { get; set; }
@@ -35,5 +35,8 @@ namespace Projeto.Moope.API.DTOs.Clientes
         [Required(ErrorMessage = "O campo Confirmação é obrigatório")]
         [Compare("Senha", ErrorMessage = "A confirmação deve ser igual à senha")]
         public string Confirmacao { get; set; }
+        
+        public string NomeFantasia { get; set; }
+        public string InscricaoEstadual { get; set; }
     }
 }

@@ -2,7 +2,7 @@ dotnet ef migrations add InitialIdentity --project ./Projeto.Moope.Infrastructur
 dotnet ef migrations add InitialApp --context AppDbContext --output-dir Infrastructure/Migrations
 
 
-## observação: no entity, quando eu tenho a ligação 1:1 no banco de dados eu preciso referencias as entidades em ambas as classes da Entity.
+## observaï¿½ï¿½o: no entity, quando eu tenho a ligaï¿½ï¿½o 1:1 no banco de dados eu preciso referencias as entidades em ambas as classes da Entity.
 
 -- executar esse para iniciar as migrations
 --dotnet ef migrations add InitialCreate --project ./Projeto.Modulo.Infrastructure/Projeto.Modulo.Infrastructure.csproj --startup-project ./Projeto.Modulo.Api/Projeto.Modulo.Api.csproj --context ApplicationDbContext --output-dir Migrations --verbose
@@ -10,11 +10,16 @@ dotnet ef migrations add InitialApp --context AppDbContext --output-dir Infrastr
 # para migrations do identity 
 dotnet ef migrations add InitialIdentity --project ./Projeto.Moope.Infrastructure/Projeto.Moope.Infrastructure.csproj --startup-project ./Projeto.Moope.API/Projeto.Moope.API.csproj --context AppIdentityDbContext --output-dir ./Migrations/001_Identity
 
-# para migrations das tables de negócio.
+# para migrations das tables de negï¿½cio.
 dotnet ef migrations add InitialApp --project ./Projeto.Moope.Infrastructure/Projeto.Moope.Infrastructure.csproj --startup-project ./Projeto.Moope.API/Projeto.Moope.API.csproj  --context AppDbContext --output-dir ./Migrations/002_business
 dotnet ef migrations add AddProduto --project ./Projeto.Moope.Infrastructure/Projeto.Moope.Infrastructure.csproj --startup-project ./Projeto.Moope.API/Projeto.Moope.API.csproj  --context AppDbContext --output-dir ./Migrations/002_business --verbose
 dotnet ef migrations add AjusteTables --project ./Projeto.Moope.Infrastructure/Projeto.Moope.Infrastructure.csproj --startup-project ./Projeto.Moope.API/Projeto.Moope.API.csproj  --context AppDbContext --output-dir ./Migrations/002_business --verbose
 dotnet ef migrations add TornarPapelNullable --project ./Projeto.Moope.Infrastructure/Projeto.Moope.Infrastructure.csproj --startup-project ./Projeto.Moope.API/Projeto.Moope.API.csproj  --context AppDbContext --output-dir ./Migrations/002_business --verbose
+
+dotnet ef migrations add AjusteTablesVendedor --project ./Projeto.Moope.Infrastructure/Projeto.Moope.Infrastructure.csproj --startup-project ./Projeto.Moope.API/Projeto.Moope.API.csproj  --context AppDbContext --output-dir ./Migrations/002_business --verbose
+dotnet ef migrations add AjusteTablesUsuario --project ./Projeto.Moope.Infrastructure/Projeto.Moope.Infrastructure.csproj --startup-project ./Projeto.Moope.API/Projeto.Moope.API.csproj  --context AppDbContext --output-dir ./Migrations/002_business --verbose
+
+
 
 dotnet ef migrations add AtualizarTables --project ./Projeto.Moope.Infrastructure/Projeto.Moope.Infrastructure.csproj --startup-project ./Projeto.Moope.API/Projeto.Moope.API.csproj  --context AppDbContext --output-dir ./Migrations/002_business
 

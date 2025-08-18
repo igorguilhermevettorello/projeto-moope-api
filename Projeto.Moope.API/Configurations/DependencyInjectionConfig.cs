@@ -30,45 +30,35 @@ namespace Projeto.Moope.API.Configurations
         private static void RegisterApplicationDependencies(IServiceCollection service, IConfiguration configuration)
         {
             service.AddScoped<AppDbContext>();
-            //service.AddScoped<IAppEnvironment, AppEnvironment>();
             service.AddScoped<INotificador, Notificador>();
             service.Configure<JwtSettings>(configuration.GetSection("Jwt"));
             service.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             service.AddScoped<IUser, AspNetUser>();
-
-
-
-
-
-            //service.AddScoped<IUserContext, UserContext>();
-            //service.AddScoped<MarketplaceContext>();
-            //service.AddScoped<INotifier, Notifier>();
         }
 
         private static void RegisterRepositories(IServiceCollection service)
         {
-            //service.AddScoped<IVendedorRepository, VendedorRepository>();
             service.AddScoped<IPlanoRepository, PlanoRepository>();
             service.AddScoped<IClienteRepository, ClienteRepository>();
-            //service.AddScoped<ICategoriaRepository, CategoriaRepository>();
-            //service.AddScoped<IFornecedorRepository, FornecedorRepository>();
+            service.AddScoped<IVendedorRepository, VendedorRepository>();
             service.AddScoped<IEnderecoRepository, EnderecoRepository>();
-            //service.AddScoped<IUserRepository<ApplicationUser>, UserRepository>();
             service.AddScoped<IUsuarioRepository, UsuarioRepository>();
             service.AddScoped<IPessoaFisicaRepository, PessoaFisicaRepository>();
+            service.AddScoped<IPessoaJuridicaRepository, PessoaJuridicaRepository>();
+            service.AddScoped<IPapelRepository, PapelRepository>();
             service.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
         private static void RegisterServices(IServiceCollection service)
         {
-            //service.AddScoped<IContaService, ContaService>();
-            //service.AddScoped<ICategoriaService, CategoriaService>();
             service.AddScoped<IPlanoService, PlanoService>();
+            service.AddScoped<IPapelService, PapelService>();
             service.AddScoped<IClienteService, ClienteService>();
-            //service.AddScoped<IFornecedorService, FornecedorService>();
+            service.AddScoped<IVendedorService, VendedorService>();
+            service.AddScoped<IEnderecoService, EnderecoService>();
             service.AddScoped<IUsuarioService, UsuarioService>();
+            service.AddScoped<IIdentityUserService, IdentityUserService>();
             service.AddHttpClient<IGoogleRecaptchaService, GoogleRecaptchaService>();
-            //service.AddScoped<IValidator<UsuarioDto>, UsuarioValidator>();
         }
 
         private static void RegisterValidators(IServiceCollection service)

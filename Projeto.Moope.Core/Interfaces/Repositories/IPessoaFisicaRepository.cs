@@ -5,6 +5,6 @@ namespace Projeto.Moope.Core.Interfaces.Repositories
 {
     public interface IPessoaFisicaRepository : IRepository<PessoaFisica>
     {
-        // Métodos específicos para PessoaFisica
+        Task<PessoaFisica> BuscarPorCpfAsync(string cpf);
     }
 }

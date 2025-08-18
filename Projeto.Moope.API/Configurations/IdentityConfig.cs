@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Projeto.Moope.API.Utils;
+using Projeto.Moope.Core.Models.Base;
 using Projeto.Moope.Infrastructure.Data;
 
 namespace Projeto.Moope.API.Configurations
@@ -16,7 +17,7 @@ namespace Projeto.Moope.API.Configurations
                 )
             );
 
-            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            services.AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>(options =>
             {
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 6;

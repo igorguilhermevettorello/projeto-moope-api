@@ -15,12 +15,12 @@ namespace Projeto.Moope.Infrastructure.Repositories
 
         public async Task<PessoaFisica> BuscarPorIdAsync(Guid id)
         {
-            return await _context.PessoasFisicas.Include(pf => pf.Cliente).FirstOrDefaultAsync(pf => pf.ClienteId == id);
+            return await _context.PessoasFisicas.FirstOrDefaultAsync(pf => pf.Id == id);
         }
 
         public async Task<IEnumerable<PessoaFisica>> BuscarTodosAsync()
         {
-            return await _context.PessoasFisicas.Include(pf => pf.Cliente).ToListAsync();
+            return await _context.PessoasFisicas.ToListAsync();
         }
 
         public async Task<PessoaFisica> SalvarAsync(PessoaFisica entity)
@@ -47,6 +47,11 @@ namespace Projeto.Moope.Infrastructure.Repositories
                 return true;
             }
             return false;
+        }
+
+        public async Task<PessoaFisica> BuscarPorCpfAsync(string cpf)
+        {
+            return await _context.PessoasFisicas.FirstOrDefaultAsync(pf => pf.Cpf.Equals(cpf));
         }
     }
 } 

@@ -13,8 +13,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Models\Validators\PessoaFisica\" />
+    <Folder Include="Models\Validators\PessoaJuridica\" />
+    <Folder Include="Models\Validators\Plano\" />
     <Folder Include="Utils\" />
     <Folder Include="Notifications\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="AutoMapper">
+      <HintPath>..\..\..\..\.nuget\packages\automapper\14.0.0\lib\net8.0\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Identity">
+      <HintPath>..\..\..\..\..\..\usr\share\dotnet\shared\Microsoft.AspNetCore.App\8.0.19\Microsoft.AspNetCore.Identity.dll</HintPath>
+    </Reference>
   </ItemGroup>
   
 </Project>

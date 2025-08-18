@@ -18,7 +18,7 @@ namespace Projeto.Moope.Infrastructure.Repositories
         {
             return await _context.Pedidos
                 .Include(p => p.Cliente)
-                .Include(p => p.Revendedor)
+                .Include(p => p.Vendedor)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
@@ -26,7 +26,7 @@ namespace Projeto.Moope.Infrastructure.Repositories
         {
             return await _context.Pedidos
                 .Include(p => p.Cliente)
-                .Include(p => p.Revendedor)
+                .Include(p => p.Vendedor)
                 .ToListAsync();
         }
 

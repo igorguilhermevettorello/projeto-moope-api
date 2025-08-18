@@ -12,6 +12,5 @@ namespace Projeto.Moope.Core.Models
         public string InscricaoEstadual { get; set; }
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
-        public ICollection<Papel> Papeis { get; set; }
     }
 } 

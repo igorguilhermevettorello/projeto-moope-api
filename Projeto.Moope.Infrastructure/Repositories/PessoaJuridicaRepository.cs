@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Projeto.Moope.Core.Enums;
 using Projeto.Moope.Core.Interfaces.Repositories;
 using Projeto.Moope.Core.Models;
 using Projeto.Moope.Infrastructure.Data;
@@ -17,7 +18,7 @@ namespace Projeto.Moope.Infrastructure.Repositories
         {
             return await _context.PessoasJuridicas.FirstOrDefaultAsync(pj => pj.Id == id);
         }
-
+        
         public async Task<IEnumerable<PessoaJuridica>> BuscarTodosAsync()
         {
             return await _context.PessoasJuridicas.ToListAsync();
@@ -47,6 +48,11 @@ namespace Projeto.Moope.Infrastructure.Repositories
                 return true;
             }
             return false;
+        }
+
+        public async Task<PessoaJuridica> BuscarPorCnpjAsync(string cnpj)
+        {
+            return await _context.PessoasJuridicas.FirstOrDefaultAsync(pj => pj.Cnpj.Equals(cnpj));
         }
     }
 } 

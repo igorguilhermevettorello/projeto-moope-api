@@ -2,6 +2,7 @@
 using Projeto.Moope.Core.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
+using Projeto.Moope.Core.Validation;
 
 namespace Projeto.Moope.API.Attributes
 {
@@ -26,65 +27,13 @@ namespace Projeto.Moope.API.Attributes
             if (tipoPessoa == null)
                 return new ValidationResult("Tipo de pessoa não informado.");
 
-            bool valido = tipoPessoa == TipoPessoa.FISICA
-                ? ValidarCPF(documento)
-                : ValidarCNPJ(documento);
-
-            return valido
+            var valido = tipoPessoa == TipoPessoa.FISICA
+                ? Documentos.IsValidCpf(documento)
+                : Documentos.IsValidCnpj(documento);
+            
+            return (valido)
                 ? ValidationResult.Success
                 : new ValidationResult(ErrorMessage ?? "Documento inválido.");
-        }
-
-        private bool ValidarCPF(string cpf)
-        {
-            if (string.IsNullOrWhiteSpace(cpf) || cpf.Length != 11 || Regex.IsMatch(cpf, @"^(\d)\1+$"))
-                return false;
-
-            var soma = 0;
-            for (int i = 0; i < 9; i++)
-                soma += (cpf[i] - '0') * (10 - i);
-
-            var resto = (soma * 10) % 11;
-            if (resto == 10) resto = 0;
-            if (resto != (cpf[9] - '0')) return false;
-
-            soma = 0;
-            for (int i = 0; i < 10; i++)
-                soma += (cpf[i] - '0') * (11 - i);
-
-            resto = (soma * 10) % 11;
-            if (resto == 10) resto = 0;
-
-            return resto == (cpf[10] - '0');
-        }
-
-        private bool ValidarCNPJ(string cnpj)
-        {
-            if (string.IsNullOrWhiteSpace(cnpj) || cnpj.Length != 14 || Regex.IsMatch(cnpj, @"^(\d)\1+$"))
-                return false;
-
-            int[] multiplicador1 = { 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
-            int[] multiplicador2 = { 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
-
-            string temp = cnpj.Substring(0, 12);
-            int soma = 0;
-
-            for (int i = 0; i < 12; i++)
-                soma += (temp[i] - '0') * multiplicador1[i];
-
-            int resto = soma % 11;
-            resto = resto < 2 ? 0 : 11 - resto;
-
-            temp += resto;
-            soma = 0;
-
-            for (int i = 0; i < 13; i++)
-                soma += (temp[i] - '0') * multiplicador2[i];
-
-            resto = soma % 11;
-            resto = resto < 2 ? 0 : 11 - resto;
-
-            return cnpj.EndsWith(resto.ToString());
         }
     }
 }

@@ -22,9 +22,9 @@ namespace Projeto.Moope.API.DTOs.Validators
                 .Length(11, 14).WithMessage("CPF deve ter formato válido.")
                 .Matches(@"^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$").WithMessage("CPF deve ter formato válido (000.000.000-00 ou 00000000000).");
 
-            RuleFor(x => x.Celular)
-                .NotEmpty().WithMessage("O celular é obrigatório.")
-                .Matches(@"^\(\d{2}\)\s?\d{4,5}-?\d{4}$").WithMessage("Celular deve ter formato válido ((00) 00000-0000 ou (00) 0000-0000).");
+            RuleFor(x => x.Telefone)
+                .NotEmpty().WithMessage("O Telefone é obrigatório.")
+                .Matches(@"^\(\d{2}\)\s?\d{4,5}-?\d{4}$").WithMessage("Telefone deve ter formato válido ((00) 00000-0000 ou (00) 0000-0000).");
 
             RuleFor(x => x.TipoPessoa)
                 .IsInEnum().WithMessage("Tipo de pessoa inválido.");

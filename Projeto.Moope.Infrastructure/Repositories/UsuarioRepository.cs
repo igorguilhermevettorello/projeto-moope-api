@@ -48,5 +48,10 @@ namespace Projeto.Moope.Infrastructure.Repositories
             }
             return false;
         }
+
+        public async Task<Usuario> BuscarPorIdAsNotrackingAsync(Guid id)
+        {
+            return await _context.Usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
+        }
     }
 } 

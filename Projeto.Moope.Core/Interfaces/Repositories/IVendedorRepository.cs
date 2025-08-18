@@ -3,8 +3,8 @@ using Projeto.Moope.Core.Models;
 
 namespace Projeto.Moope.Core.Interfaces.Repositories
 {
-    public interface IRevendedorRepository : IRepository<Revendedor>
+    public interface IVendedorRepository : IRepository<Vendedor>
     {
-        // Métodos específicos para Revendedor
+        Task<Vendedor> BuscarPorIdAsNotrackingAsync(Guid id);
     }
 }

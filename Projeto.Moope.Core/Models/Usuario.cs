@@ -12,26 +12,27 @@ namespace Projeto.Moope.Core.Models
         [StringLength(255)]
         public string Nome { get; set; }
 
-        [Required]
-        [StringLength(255)]
-        public string Email { get; set; }
+        // [Required]
+        // [StringLength(255)]
+        // public string Email { get; set; }
 
-        [StringLength(20)]
-        public string Telefone { get; set; }
+        // [StringLength(20)]
+        // public string Telefone { get; set; }
 
+        [NotMapped]
         [Required]
-        public TipoUsuario Tipo { get; set; }
+        public TipoUsuario TipoUsuario { get; set; }
 
-        [Required]
-        public bool Ativo { get; set; }
+        // [Required]
+        // public bool Ativo { get; set; }
 
         public Guid? EnderecoId { get; set; }
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
 
-        [Required]
-        [ForeignKey("IdentityUserId")]
-        public string IdentityUserId { get; set; }
+        // [Required]
+        // [ForeignKey("IdentityUserId")]
+        // public string IdentityUserId { get; set; }
         public Endereco Endereco { get; set; }
     }
 } 

@@ -12,12 +12,17 @@ namespace Projeto.Moope.Infrastructure.Repositories
         {
             _context = context;
         }
+        
+        public async Task<Endereco> BuscarPorIdAsNotrackingAsync(Guid id)
+        {
+            return await _context.Enderecos.AsNoTracking().FirstOrDefaultAsync(e => e.Id == id);
+        }
 
         public async Task<Endereco> BuscarPorIdAsync(Guid id)
         {
             return await _context.Enderecos.FirstOrDefaultAsync(e => e.Id == id);
         }
-
+        
         public async Task<IEnumerable<Endereco>> BuscarTodosAsync()
         {
             return await _context.Enderecos.ToListAsync();

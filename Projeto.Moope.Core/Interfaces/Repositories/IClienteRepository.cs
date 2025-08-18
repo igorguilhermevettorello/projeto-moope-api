@@ -5,6 +5,6 @@ namespace Projeto.Moope.Core.Interfaces.Repositories
 {
     public interface IClienteRepository : IRepository<Cliente>
     {
-        // Métodos específicos para Cliente
+        Task<Cliente> BuscarPorIdAsNotrackingAsync(Guid id);
     }
 }

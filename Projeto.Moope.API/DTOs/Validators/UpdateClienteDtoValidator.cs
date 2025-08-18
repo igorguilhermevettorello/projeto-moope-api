@@ -10,8 +10,8 @@ namespace Projeto.Moope.API.DTOs.Validators
             RuleFor(x => x.Id)
                 .NotEmpty().WithMessage("O Id é obrigatório.");
 
-            RuleFor(x => x.PapelId)
-                .NotEmpty().WithMessage("O PapelId é obrigatório.");
+            // RuleFor(x => x.PapelId)
+            //     .NotEmpty().WithMessage("O PapelId é obrigatório.");
 
             RuleFor(x => x.TipoPessoa)
                 .IsInEnum().WithMessage("Tipo de pessoa inválido.");

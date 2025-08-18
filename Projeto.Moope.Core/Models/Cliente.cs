@@ -1,20 +1,18 @@
-using Projeto.Moope.Core.Enums;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Projeto.Moope.Core.Enums;
+using Projeto.Moope.Core.Models.Base;
 
 namespace Projeto.Moope.Core.Models
 {
     [Table("Cliente")]
-    public class Cliente
+    public class Cliente : Entity
     {
-        [Key]
-        public Guid Id { get; set; }
-        public Guid? PapelId { get; set; }
-        public Papel? Papel { get; set; }
+        [NotMapped]
         public TipoPessoa TipoPessoa { get; set; }
-        public bool Ativo { get; set; }
+        
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
-        public Usuario Usuario { get; set; }
+        [NotMapped]
+        public string CpfCnpj { get; set; }
     }
 } 

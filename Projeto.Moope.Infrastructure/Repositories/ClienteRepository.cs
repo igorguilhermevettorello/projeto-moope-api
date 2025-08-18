@@ -13,20 +13,19 @@ namespace Projeto.Moope.Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task<Cliente> BuscarPorIdAsNotrackingAsync(Guid id)
+        {
+            return await _context.Clientes.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+        }
+            
         public async Task<Cliente> BuscarPorIdAsync(Guid id)
         {
-            return await _context.Clientes
-                .Include(c => c.Papel)
-                .Include(c => c.Usuario)
-                .FirstOrDefaultAsync(c => c.Id == id);
+            return await _context.Clientes.FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<IEnumerable<Cliente>> BuscarTodosAsync()
         {
-            return await _context.Clientes
-                .Include(c => c.Papel)
-                .Include(c => c.Usuario)
-                .ToListAsync();
+            return await _context.Clientes.ToListAsync();
         }
 
         public async Task<Cliente> SalvarAsync(Cliente entity)

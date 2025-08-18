@@ -10,5 +10,6 @@ namespace Projeto.Moope.Core.Interfaces.Services
         Task<Result<Usuario>> SalvarAsync(Usuario usuario);
         Task<Result<Usuario>> AtualizarAsync(Usuario usuario);
         Task<bool> RemoverAsync(Guid id);
+        Task<Usuario> BuscarPorIdAsNotrackingAsync(Guid id);
     }
 }

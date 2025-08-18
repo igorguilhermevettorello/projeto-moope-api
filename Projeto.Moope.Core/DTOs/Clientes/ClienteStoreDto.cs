@@ -10,5 +10,8 @@ namespace Projeto.Moope.Core.DTOs.Clientes
     {
         public string CpfCnpj { get; set; }
         public string Senha { get; set; }
+        public string RazaoSocial { get; set; }
+        public string NomeFantasia { get; set; }
+        public string InscricaoEstadual { get; set; }
     }
 }

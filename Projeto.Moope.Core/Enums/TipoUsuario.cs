@@ -6,4 +6,4 @@ namespace Projeto.Moope.Core.Enums
         Vendedor,
         Cliente
     }
-} 
+}

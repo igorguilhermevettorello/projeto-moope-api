@@ -6,10 +6,12 @@ namespace Projeto.Moope.Core.Interfaces.Services
 {
     public interface IClienteService
     {
+        Task<Cliente> BuscarPorIdAsNotrackingAsync(Guid id);
         Task<Cliente> BuscarPorIdAsync(Guid id);
         Task<IEnumerable<Cliente>> BuscarTodosAsync();
-        Task<Result<Cliente>> SalvarAsync(Cliente cliente, Endereco endereco, Usuario usuario, ClienteStoreDto auxiliar);
-        Task<Result<Cliente>> AtualizarAsync(Cliente cliente, Endereco endereco, Usuario usuario, ClienteStoreDto auxiliar);
+        Task<Result<Cliente>> SalvarAsync(Cliente cliente);
+        Task<Result<Cliente>> SalvarAsync(Cliente cliente, PessoaFisica pessoaFisica, PessoaJuridica pessoaJuridica);
+        Task<Result<Cliente>> AtualizarAsync(Cliente cliente, PessoaFisica pessoaFisica, PessoaJuridica pessoaJuridica);
         Task<Result<Cliente>> AtualizarAsync(Cliente cliente);
         Task<bool> RemoverAsync(Guid id);
     }

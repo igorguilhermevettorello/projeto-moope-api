@@ -4,10 +4,10 @@ namespace Projeto.Moope.Core.Enums
 {
     public enum TipoPessoa
     {
-        [Description("Pessoa Física")]
+        [Description("Pessoa FÃ­sica")]
         FISICA = 1,
 
-        [Description("Pessoa Jurídica")]
+        [Description("Pessoa JurÃ­dica")]
         JURIDICA = 2
     }
 } 
