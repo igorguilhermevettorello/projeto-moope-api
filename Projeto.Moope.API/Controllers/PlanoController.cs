@@ -1,5 +1,6 @@
 using AutoMapper;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Projeto.Moope.API.Controllers.Base;
 using Projeto.Moope.API.DTOs.Planos;
@@ -12,6 +13,7 @@ namespace Projeto.Moope.API.Controllers
 {
     [ApiController]
     [Route("api/plano")]
+    [Authorize]
     public class PlanoController : MainController
     {
         private readonly IPlanoService _planoService;

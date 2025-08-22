@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Projeto.Moope.API.Controllers.Base;
@@ -15,6 +16,7 @@ namespace Projeto.Moope.API.Controllers
 {
     [ApiController]
     [Route("api/vendedor")]
+    [Authorize]
     public class VendedorController : MainController
     {
         private readonly IVendedorService _vendedorService;
@@ -46,6 +48,7 @@ namespace Projeto.Moope.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = nameof(TipoUsuario.Administrador))]
         public async Task<IActionResult> BuscarTodosAsync()
         {
             var clientes = await _vendedorService.BuscarTodosAsync();
@@ -53,6 +56,7 @@ namespace Projeto.Moope.API.Controllers
         }
         
         [HttpPost]
+        [Authorize(Roles = $"{nameof(TipoUsuario.Vendedor)},{nameof(TipoUsuario.Administrador)}")]
         [ProducesResponseType(typeof(CreateVendedorDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -71,7 +75,7 @@ namespace Projeto.Moope.API.Controllers
                 return CustomResponse(ModelState);
 
             var identityUser = new IdentityUser<Guid>();
-            
+
             await _unitOfWork.BeginTransactionAsync();
             try
             {
@@ -108,6 +112,10 @@ namespace Projeto.Moope.API.Controllers
                     if (!rsPapel.Status) 
                         throw new Exception(rsPapel.Mensagem);
                     
+                    if (!await IsAdmin())
+                    {
+                        vendedor.VendedorId = UsuarioId;
+                    }
                     var rsVendedor = await _vendedorService.SalvarAsync(vendedor);
                     if (!rsVendedor.Status) 
                         throw new Exception(rsVendedor.Mensagem);
@@ -129,7 +137,11 @@ namespace Projeto.Moope.API.Controllers
                     vendedor.Id = rsUsuario.Dados.Id;
                     pessoaFisica.Id = rsUsuario.Dados.Id;
                     pessoaJuridica.Id = rsUsuario.Dados.Id;
-                    vendedorId = vendedor.Id; 
+                    vendedorId = vendedor.Id;
+                    if (!await IsAdmin())
+                    {
+                        vendedor.VendedorId = UsuarioId;
+                    }
                     var rsVendedor = await _vendedorService.SalvarAsync(vendedor, pessoaFisica, pessoaJuridica);
                     if (!rsVendedor.Status) 
                         throw new Exception(rsVendedor.Mensagem);    
@@ -150,8 +162,8 @@ namespace Projeto.Moope.API.Controllers
             }
         }
         
-        
         [HttpPut("{id}")]
+        [Authorize(Roles = $"{nameof(TipoUsuario.Vendedor)},{nameof(TipoUsuario.Administrador)}")]
         [ProducesResponseType(typeof(UpdateVendedorDto), StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -225,7 +237,6 @@ namespace Projeto.Moope.API.Controllers
                 return CustomResponse();
             }
         }
-        
     }
     
     

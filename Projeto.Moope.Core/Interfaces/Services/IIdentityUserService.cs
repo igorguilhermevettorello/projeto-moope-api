@@ -20,7 +20,7 @@ namespace Projeto.Moope.Core.Interfaces.Services
         // Task<string> GerarTokenResetSenhaAsync(string email);
         // Task<bool> ConfirmarEmailAsync(string userId, string token);
         // Task<string> GerarTokenConfirmacaoEmailAsync(string userId);
-        // Task<IdentityUser> BuscarPorEmailAsync(string email);
+        Task<IdentityUser<Guid>> BuscarPorEmailAsync(string email);
         // Task<IdentityUser> BuscarPorIdAsync(string id);
         // Task<bool> VerificarSenhaAsync(string userId, string senha);
         // Task<IdentityResult> BloquearUsuarioAsync(string userId);

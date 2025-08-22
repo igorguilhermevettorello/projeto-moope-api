@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Projeto.Moope.Core.Enums;
 using Projeto.Moope.Core.Interfaces.Identity;
 using Projeto.Moope.Core.Interfaces.Notifications;
 using Projeto.Moope.Core.Notifications;
@@ -23,6 +25,11 @@ namespace Projeto.Moope.API.Controllers.Base
                 UsuarioId = appUser.GetUserId();
                 UsuarioAutenticado = true;
             }
+        }
+        
+        protected async Task<bool> IsAdmin()
+        {
+            return User.FindFirst(ClaimTypes.Role)?.Value == TipoUsuario.Administrador.ToString();
         }
 
         protected bool OperacaoValida()

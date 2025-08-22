@@ -12,7 +12,13 @@ namespace Projeto.Moope.Infrastructure.Repositories
         {
             _context = context;
         }
-
+        
+        
+        public async Task<Transacao> BuscarPorPedidoIdAsync(Guid pedidoId)
+        {
+            return await _context.Transacoes.Include(t => t.Pedido).FirstOrDefaultAsync(t => t.Pedido.Id == pedidoId);
+        }
+            
         public async Task<Transacao> BuscarPorIdAsync(Guid id)
         {
             return await _context.Transacoes.Include(t => t.Pedido).FirstOrDefaultAsync(t => t.Id == id);

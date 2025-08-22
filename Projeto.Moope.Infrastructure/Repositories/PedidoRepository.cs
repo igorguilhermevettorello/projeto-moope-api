@@ -14,6 +14,24 @@ namespace Projeto.Moope.Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task<IEnumerable<Pedido>> BuscarPorVendedorIdAsync(Guid vendedorId)
+        {
+            return await _context.Pedidos
+                .Include(p => p.Cliente)
+                .Include(p => p.Vendedor)
+                .Where(p => p.VendedorId == vendedorId)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Pedido>> BuscarPorClienteIdAsync(Guid clienteId)
+        {
+            return await _context.Pedidos
+                .Include(p => p.Cliente)
+                .Include(p => p.Vendedor)
+                .Where(p => p.Cliente.Id == clienteId)
+                .ToListAsync();
+        }
+
         public async Task<Pedido> BuscarPorIdAsync(Guid id)
         {
             return await _context.Pedidos

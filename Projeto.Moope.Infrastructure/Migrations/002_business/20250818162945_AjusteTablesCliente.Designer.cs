@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Projeto.Moope.Infrastructure.Data;
 
@@ -10,9 +11,11 @@ using Projeto.Moope.Infrastructure.Data;
 namespace Projeto.Moope.Infrastructure.Migrations._002_business
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250818162945_AjusteTablesCliente")]
+    partial class AjusteTablesCliente
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -120,22 +123,8 @@ namespace Projeto.Moope.Infrastructure.Migrations._002_business
                     b.Property<Guid>("ClienteId")
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("CodigoPlano")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<string>("DescricaoPlano")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<Guid>("PlanoId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<int>("Quantidade")
-                        .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -147,17 +136,12 @@ namespace Projeto.Moope.Infrastructure.Migrations._002_business
                     b.Property<DateTime>("Updated")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<decimal>("ValorUnitarioPlano")
-                        .HasColumnType("decimal(65,30)");
-
                     b.Property<Guid>("VendedorId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ClienteId");
-
-                    b.HasIndex("PlanoId");
 
                     b.HasIndex("VendedorId");
 
@@ -361,12 +345,6 @@ namespace Projeto.Moope.Infrastructure.Migrations._002_business
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Projeto.Moope.Core.Models.Plano", "Plano")
-                        .WithMany()
-                        .HasForeignKey("PlanoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Projeto.Moope.Core.Models.Vendedor", "Vendedor")
                         .WithMany()
                         .HasForeignKey("VendedorId")
@@ -374,8 +352,6 @@ namespace Projeto.Moope.Infrastructure.Migrations._002_business
                         .IsRequired();
 
                     b.Navigation("Cliente");
-
-                    b.Navigation("Plano");
 
                     b.Navigation("Vendedor");
                 });

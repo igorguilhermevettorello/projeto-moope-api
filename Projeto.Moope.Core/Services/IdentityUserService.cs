@@ -380,18 +380,18 @@ namespace Projeto.Moope.Core.Services
         //     }
         // }
         //
-        // public async Task<IdentityUser> BuscarPorEmailAsync(string email)
-        // {
-        //     try
-        //     {
-        //         return await _userManager.FindByEmailAsync(email);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         _notificador.AdicionarNotificacao($"Erro ao buscar usuário por email: {ex.Message}");
-        //         return null;
-        //     }
-        // }
+        public async Task<IdentityUser<Guid>> BuscarPorEmailAsync(string email)
+        {
+            try
+            {
+                return await _userManager.FindByEmailAsync(email);
+            }
+            catch (Exception ex)
+            {
+                Notificar("Email", $"Erro ao buscar usuário por email: {ex.Message}");
+                return null;
+            }
+        }
         //
         // public async Task<IdentityUser> BuscarPorIdAsync(string id)
         // {

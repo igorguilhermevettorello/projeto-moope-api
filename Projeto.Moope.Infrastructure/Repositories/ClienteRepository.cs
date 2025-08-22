@@ -17,7 +17,12 @@ namespace Projeto.Moope.Infrastructure.Repositories
         {
             return await _context.Clientes.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
         }
-            
+
+        public async Task<Cliente> BuscarPorEmailAsync(string email)
+        {
+            return await _context.Clientes.FirstOrDefaultAsync(c => c.CpfCnpj == email);
+        }
+
         public async Task<Cliente> BuscarPorIdAsync(Guid id)
         {
             return await _context.Clientes.FirstOrDefaultAsync(c => c.Id == id);

@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Projeto.Moope.API.Controllers.Base;
@@ -15,6 +16,7 @@ namespace Projeto.Moope.API.Controllers
 {
     [ApiController]
     [Route("api/cliente")]
+    [Authorize]
     public class ClienteController : MainController
     {
         private readonly IClienteService _clienteService;
@@ -46,6 +48,7 @@ namespace Projeto.Moope.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = nameof(TipoUsuario.Administrador))]
         [ProducesResponseType(typeof(List<ListClienteDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -57,6 +60,7 @@ namespace Projeto.Moope.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = nameof(TipoUsuario.Administrador))]
         [ProducesResponseType(typeof(ListClienteDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -71,6 +75,7 @@ namespace Projeto.Moope.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = $"{nameof(TipoUsuario.Vendedor)},{nameof(TipoUsuario.Administrador)}")]
         [ProducesResponseType(typeof(CreateClienteDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -148,6 +153,12 @@ namespace Projeto.Moope.API.Controllers
                     cliente.Id = rsUsuario.Dados.Id;
                     pessoaFisica.Id = rsUsuario.Dados.Id;
                     pessoaJuridica.Id = rsUsuario.Dados.Id;
+                    
+                    if (!await IsAdmin())
+                    {
+                        cliente.VendedorId = UsuarioId;
+                    }
+                    
                     var rsCliente = await _clienteService.SalvarAsync(cliente, pessoaFisica, pessoaJuridica);
                     if (!rsCliente.Status) 
                         throw new Exception(rsCliente.Mensagem);    
@@ -169,6 +180,7 @@ namespace Projeto.Moope.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = nameof(TipoUsuario.Administrador))]
         [ProducesResponseType(typeof(UpdateClienteDto), StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

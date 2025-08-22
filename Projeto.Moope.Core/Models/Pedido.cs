@@ -8,11 +8,22 @@ namespace Projeto.Moope.Core.Models
     {
         public Guid ClienteId { get; set; }
         public Guid VendedorId { get; set; }
+        public Guid PlanoId { get; set; }
+        public int Quantidade { get; set; }
+        
+        // Snapshot do plano no momento da venda
+        public decimal ValorUnitarioPlano { get; set; }
+        public string DescricaoPlano { get; set; }
+        public string CodigoPlano { get; set; }
+        
         public decimal Total { get; set; }
         public string Status { get; set; }
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
+        
+        // Navegações
         public Cliente Cliente { get; set; }
         public Vendedor Vendedor { get; set; }
+        public Plano Plano { get; set; }  // Para referência atual
     }
 } 

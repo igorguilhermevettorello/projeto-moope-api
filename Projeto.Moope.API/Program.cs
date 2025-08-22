@@ -11,6 +11,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddConectionConfig(builder.Configuration);
 builder.Services.AddDependencyInjectionConfig(builder.Configuration);
+builder.Services.AddCelPayServices(builder.Configuration);
 builder.Services.AddIdentityConfig(builder.Configuration);
 builder.Services.AddAuthConfig(builder.Configuration);
 builder.Services.AddSwaggerConfig();

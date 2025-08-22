@@ -38,5 +38,6 @@ namespace Projeto.Moope.API.DTOs.Clientes
         
         public string NomeFantasia { get; set; }
         public string InscricaoEstadual { get; set; }
+        public Guid? VendedorId { get; set; }
     }
 }

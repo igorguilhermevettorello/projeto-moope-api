@@ -13,6 +13,11 @@ namespace Projeto.Moope.Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task<Plano> BuscarPorIdAsNotrackingAsync(Guid id)
+        {
+            return await _context.Planos.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+        }
+        
         public async Task<Plano> BuscarPorIdAsync(Guid id)
         {
             return await _context.Planos.FirstOrDefaultAsync(p => p.Id == id);

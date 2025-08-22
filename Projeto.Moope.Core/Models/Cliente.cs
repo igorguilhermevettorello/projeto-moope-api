@@ -14,5 +14,7 @@ namespace Projeto.Moope.Core.Models
         public DateTime Updated { get; set; }
         [NotMapped]
         public string CpfCnpj { get; set; }
+        public Guid? VendedorId { get; set; }
+        public Vendedor? Vendedor { get; set; }
     }
 } 

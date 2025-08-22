@@ -5,6 +5,6 @@ namespace Projeto.Moope.Core.Interfaces.Repositories
 {
     public interface IPlanoRepository : IRepository<Plano>
     {
-        // Métodos específicos para Plano
+        Task<Plano> BuscarPorIdAsNotrackingAsync(Guid id);
     }
 } 
