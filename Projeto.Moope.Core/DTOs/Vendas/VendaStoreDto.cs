@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Projeto.Moope.API.DTOs
 {
-    public class CreateVendaDto
+    public class VendaStoreDto
     {
         [Required(ErrorMessage = "Nome do cliente é obrigatório")]
         public string NomeCliente { get; set; }
@@ -13,9 +13,6 @@ namespace Projeto.Moope.API.DTOs
         
         [Required(ErrorMessage = "O campo Telefone é obrigatório")]
         public string Telefone { get; set; }
-        
-        [Documento("TipoPessoa")]
-        public string CpfCnpj { get; set; }
         
         [Required(ErrorMessage = "Número do cartão é obrigatório")]
         [RegularExpression(@"^\d{13,19}$", ErrorMessage = "Número do cartão deve ter entre 13 e 19 dígitos")]

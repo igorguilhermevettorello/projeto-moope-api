@@ -1,6 +1,9 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Projeto.Moope.API.Controllers.Base;
+using Projeto.Moope.API.DTOs;
+using Projeto.Moope.API.DTOs.Vendas;
 using Projeto.Moope.Core.DTOs.Vendas;
 using Projeto.Moope.Core.Interfaces.Identity;
 using Projeto.Moope.Core.Interfaces.Notifications;
@@ -15,15 +18,18 @@ namespace Projeto.Moope.API.Controllers
     {
         private readonly IVendaService _vendaService;
         private readonly IIdentityUserService _identityUserService;
+        private readonly IMapper _mapper;
         
         public VendaController(
             IVendaService vendaService,
             IIdentityUserService identityUserService,
+            IMapper mapper,
             INotificador notificador,
             IUser user) : base(notificador, user)
         {
             _vendaService = vendaService;
             _identityUserService = identityUserService;
+            _mapper = mapper;
         }
 
         [AllowAnonymous]
@@ -35,35 +41,40 @@ namespace Projeto.Moope.API.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> ProcessarVenda([FromBody] CreateVendaDto vendaDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
+            if (!ModelState.IsValid) 
+                return CustomResponse(ModelState);
+            
             try
             {
-                var clinte = await _identityUserService.BuscarPorEmailAsync(vendaDto.Email);
+                //var clinte = await _identityUserService.BuscarPorEmailAsync(vendaDto.Email);
                 // if (clinte == null)
                 // {
                 //     throw new Exception("teste");
                 // }
-                vendaDto.ClienteId = clinte.Id;
+                // vendaDto.ClienteId = clinte.Id;
+                
+                var vendaStoreDto = _mapper.Map<VendaStoreDto>(vendaDto);
+                
+                var resultado = await _vendaService.ProcessarVendaAsync(vendaStoreDto);
+                if (!resultado.Status) 
+                    throw new Exception(resultado.Mensagem);
                 
                 
-                var resultado = await _vendaService.ProcessarVendaAsync(vendaDto);
-                
-                if (resultado.Sucesso)
-                {
-                    return Ok(resultado);
-                }
-                else
-                {
-                    return BadRequest(resultado);
-                }
+                // if (resultado.Sucesso)
+                // {
+                //     return Ok(resultado);
+                // }
+                // else
+                // {
+                //     return BadRequest(resultado);
+                // }
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { error = "Erro interno ao processar venda", details = ex.Message });
+                NotificarErro("Mensagem",  ex.Message);
+                // await _unitOfWork.RollbackAsync();
+                return CustomResponse();
+                // return StatusCode(500, new { error = "Erro interno ao processar venda", details = ex.Message });
             }
         }
 

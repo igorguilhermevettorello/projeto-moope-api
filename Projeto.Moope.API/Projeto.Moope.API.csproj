@@ -23,8 +23,4 @@
     <ProjectReference Include="..\Projeto.Moope.Infrastructure\Projeto.Moope.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DTOs\Vendas\" />
-  </ItemGroup>
-
 </Project>

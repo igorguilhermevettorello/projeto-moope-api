@@ -1,9 +1,10 @@
 using FluentValidation;
+using Projeto.Moope.API.DTOs;
 using Projeto.Moope.Core.DTOs.Vendas;
 
 namespace Projeto.Moope.Core.DTOs.Validators
 {
-    public class CreateVendaDtoValidator : AbstractValidator<CreateVendaDto>
+    public class CreateVendaDtoValidator : AbstractValidator<VendaStoreDto>
     {
         public CreateVendaDtoValidator()
         {

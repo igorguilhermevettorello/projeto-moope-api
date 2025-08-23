@@ -13,7 +13,7 @@ namespace Projeto.Moope.API.Controllers
 {
     [ApiController]
     [Route("api/plano")]
-    [Authorize]
+    //[Authorize]
     public class PlanoController : MainController
     {
         private readonly IPlanoService _planoService;

@@ -1,3 +1,4 @@
+using Projeto.Moope.API.DTOs;
 using Projeto.Moope.Core.DTOs.Vendas;
 using Projeto.Moope.Core.Interfaces.Notifications;
 using Projeto.Moope.Core.Interfaces.Pagamentos;
@@ -38,18 +39,15 @@ namespace Projeto.Moope.Core.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<VendaResponseDto> ProcessarVendaAsync(CreateVendaDto vendaDto)
+        public async Task<VendaResponseDto> ProcessarVendaAsync(VendaStoreDto vendaDto)
         {
             try
             {
                 // Validar se o vendedor existe
                 var vendedor = await _vendedorRepository.BuscarPorIdAsNotrackingAsync(vendaDto.VendedorId);
-                if (vendedor == null)
-                {
-                    Notificar("Mensagem","Vendedor não encontrado");
-                    return CriarRespostaErro("Vendedor não encontrado");
-                }
-
+                if (vendedor != null)
+                    vendaDto.VendedorId = vendedor.Id;
+                
                 // Validar se o plano existe
                 var plano = await _planoRepository.BuscarPorIdAsNotrackingAsync(vendaDto.PlanoId);
                 if (plano == null)
@@ -91,9 +89,9 @@ namespace Projeto.Moope.Core.Services
                     Quantidade = vendaDto.Quantidade,
                     
                     // Snapshot do plano no momento da venda
-                    ValorUnitarioPlano = plano.Valor,
-                    DescricaoPlano = plano.Descricao,
-                    CodigoPlano = plano.Codigo,
+                    PlanoValor = plano.Valor,
+                    PlanoDescricao = plano.Descricao,
+                    PlanoCodigo = plano.Codigo,
                     
                     Total = totalCalculado,
                     Status = "PENDENTE",
@@ -139,9 +137,9 @@ namespace Projeto.Moope.Core.Services
                         Email = vendaDto.Email,
                         VendedorId = vendaDto.VendedorId,
                         PlanoId = vendaDto.PlanoId,
-                        NomePlano = pedido.DescricaoPlano,
-                        CodigoPlano = pedido.CodigoPlano,
-                        ValorUnitarioPlano = pedido.ValorUnitarioPlano,
+                        NomePlano = pedido.PlanoDescricao,
+                        CodigoPlano = pedido.PlanoCodigo,
+                        ValorUnitarioPlano = pedido.PlanoValor,
                         Quantidade = vendaDto.Quantidade,
                         Sucesso = true
                     };
@@ -163,9 +161,9 @@ namespace Projeto.Moope.Core.Services
                         Email = vendaDto.Email,
                         VendedorId = vendaDto.VendedorId,
                         PlanoId = vendaDto.PlanoId,
-                        NomePlano = pedido.DescricaoPlano,
-                        CodigoPlano = pedido.CodigoPlano,
-                        ValorUnitarioPlano = pedido.ValorUnitarioPlano,
+                        NomePlano = pedido.PlanoDescricao,
+                        CodigoPlano = pedido.PlanoCodigo,
+                        ValorUnitarioPlano = pedido.PlanoValor,
                         Quantidade = vendaDto.Quantidade,
                         Sucesso = false
                     };
@@ -200,11 +198,11 @@ namespace Projeto.Moope.Core.Services
                     Valor = pedido.Total,
                     NomeCliente = pedido.Cliente?.ToString() ?? "N/A",
                     Email = "N/A", // Seria necessário adicionar email ao modelo Cliente
-                    VendedorId = pedido.VendedorId,
+                    VendedorId = pedido.VendedorId ?? Guid.Empty,
                     PlanoId = pedido.PlanoId,
-                    NomePlano = pedido.DescricaoPlano ?? "N/A",
-                    CodigoPlano = pedido.CodigoPlano ?? "N/A",
-                    ValorUnitarioPlano = pedido.ValorUnitarioPlano,
+                    NomePlano = pedido.PlanoDescricao ?? "N/A",
+                    CodigoPlano = pedido.PlanoCodigo ?? "N/A",
+                    ValorUnitarioPlano = pedido.PlanoValor,
                     Quantidade = pedido.Quantidade,
                     Sucesso = pedido.Status == "APROVADO"
                 };
@@ -237,11 +235,11 @@ namespace Projeto.Moope.Core.Services
                         Valor = pedido.Total,
                         NomeCliente = pedido.Cliente?.ToString() ?? "N/A",
                         Email = "N/A",
-                        VendedorId = pedido.VendedorId,
+                        VendedorId = pedido.VendedorId ?? Guid.Empty,
                         PlanoId = pedido.PlanoId,
-                        NomePlano = pedido.DescricaoPlano ?? "N/A",
-                        CodigoPlano = pedido.CodigoPlano ?? "N/A",
-                        ValorUnitarioPlano = pedido.ValorUnitarioPlano,
+                        NomePlano = pedido.PlanoDescricao ?? "N/A",
+                        CodigoPlano = pedido.PlanoCodigo ?? "N/A",
+                        ValorUnitarioPlano = pedido.PlanoValor,
                         Quantidade = pedido.Quantidade,
                         Sucesso = pedido.Status == "APROVADO"
                     });
@@ -283,11 +281,11 @@ namespace Projeto.Moope.Core.Services
                         Valor = pedido.Total,
                         NomeCliente = pedido.Cliente?.ToString() ?? "N/A",
                         Email = email,
-                        VendedorId = pedido.VendedorId,
+                        VendedorId = pedido.VendedorId ?? Guid.Empty,
                         PlanoId = pedido.PlanoId,
-                        NomePlano = pedido.DescricaoPlano ?? "N/A",
-                        CodigoPlano = pedido.CodigoPlano ?? "N/A",
-                        ValorUnitarioPlano = pedido.ValorUnitarioPlano,
+                        NomePlano = pedido.PlanoDescricao ?? "N/A",
+                        CodigoPlano = pedido.PlanoCodigo ?? "N/A",
+                        ValorUnitarioPlano = pedido.PlanoValor,
                         Quantidade = pedido.Quantidade,
                         Sucesso = pedido.Status == "APROVADO"
                     });
@@ -302,7 +300,7 @@ namespace Projeto.Moope.Core.Services
             }
         }
 
-        private async Task<Cliente?> CriarOuBuscarClienteAsync(CreateVendaDto vendaDto)
+        private async Task<Cliente?> CriarOuBuscarClienteAsync(VendaStoreDto vendaDto)
         {
             try
             {

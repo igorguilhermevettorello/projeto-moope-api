@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Projeto.Moope.API.DTOs;
 
 namespace Projeto.Moope.Infrastructure.Services.Pagamentos
 {
@@ -33,7 +34,7 @@ namespace Projeto.Moope.Infrastructure.Services.Pagamentos
                 new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async Task<CelPayResponseDto> ProcessarPagamentoAsync(CreateVendaDto vendaDto)
+        public async Task<CelPayResponseDto> ProcessarPagamentoAsync(VendaStoreDto vendaDto)
         {
             try
             {
@@ -110,7 +111,7 @@ namespace Projeto.Moope.Infrastructure.Services.Pagamentos
             }
         }
 
-        private CelPayRequestDto MapearParaCelPayRequest(CreateVendaDto vendaDto)
+        private CelPayRequestDto MapearParaCelPayRequest(VendaStoreDto vendaDto)
         {
             var (mes, ano) = ExtrairMesAnoValidade(vendaDto.DataValidade);
             

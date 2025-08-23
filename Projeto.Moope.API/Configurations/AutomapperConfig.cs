@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Projeto.Moope.API.DTOs;
 using Projeto.Moope.API.DTOs.Clientes;
 using Projeto.Moope.API.DTOs.Enderecos;
 using Projeto.Moope.API.DTOs.Planos;
 using Projeto.Moope.API.DTOs.Revendedor;
+using Projeto.Moope.API.DTOs.Vendas;
 using Projeto.Moope.Core.Models;
 
 namespace Projeto.Moope.API.Configurations
@@ -65,6 +67,8 @@ namespace Projeto.Moope.API.Configurations
             CreateMap<UpdateVendedorDto, PessoaJuridica>()
                 .ForMember(dest => dest.Cnpj, opt => opt.MapFrom(src => src.CpfCnpj))
                 .ForMember(dest => dest.RazaoSocial, opt => opt.MapFrom(src => src.Nome));
+            
+            CreateMap<CreateVendaDto, VendaStoreDto>().ReverseMap();
         }
     }
 }

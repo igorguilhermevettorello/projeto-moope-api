@@ -73,7 +73,7 @@ namespace Projeto.Moope.API.Configurations
             service.AddScoped<IValidator<PlanoDto>, PlanoDtoValidator>();
             service.AddScoped<IValidator<CreateClienteDto>, CreateClienteDtoValidator>();
             service.AddScoped<IValidator<UpdateClienteDto>, UpdateClienteDtoValidator>();
-            service.AddScoped<IValidator<CreateVendaDto>, CreateVendaDtoValidator>();
+            // service.AddScoped<IValidator<CreateVendaDto>, CreateVendaDtoValidator>();
         }
     }
 }
