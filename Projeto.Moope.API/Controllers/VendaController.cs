@@ -1,10 +1,12 @@
 using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Projeto.Moope.API.Controllers.Base;
-using Projeto.Moope.API.DTOs;
+using Projeto.Moope.API.DTOs.Clientes;
 using Projeto.Moope.API.DTOs.Vendas;
-using Projeto.Moope.Core.DTOs.Vendas;
+using Projeto.Moope.Core.Commands.Clientes.Criar;
+using Projeto.Moope.Core.Commands.Vendas;
 using Projeto.Moope.Core.Interfaces.Identity;
 using Projeto.Moope.Core.Interfaces.Notifications;
 using Projeto.Moope.Core.Interfaces.Services;
@@ -17,19 +19,25 @@ namespace Projeto.Moope.API.Controllers
     public class VendaController : MainController
     {
         private readonly IVendaService _vendaService;
+        private readonly IClienteService _clienteService;
         private readonly IIdentityUserService _identityUserService;
         private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
         
         public VendaController(
             IVendaService vendaService,
+            IClienteService clienteService,
             IIdentityUserService identityUserService,
             IMapper mapper,
+            IMediator mediator,
             INotificador notificador,
             IUser user) : base(notificador, user)
         {
             _vendaService = vendaService;
+            _clienteService = clienteService;
             _identityUserService = identityUserService;
             _mapper = mapper;
+            _mediator = mediator;
         }
 
         [AllowAnonymous]
@@ -41,40 +49,41 @@ namespace Projeto.Moope.API.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> ProcessarVenda([FromBody] CreateVendaDto vendaDto)
         {
-            if (!ModelState.IsValid) 
+            if (!ModelState.IsValid)
                 return CustomResponse(ModelState);
             
             try
             {
-                //var clinte = await _identityUserService.BuscarPorEmailAsync(vendaDto.Email);
-                // if (clinte == null)
-                // {
-                //     throw new Exception("teste");
-                // }
-                // vendaDto.ClienteId = clinte.Id;
+                var clienteExiste = await _clienteService.BuscarPorEmailAsync(vendaDto.Email);
+                if (clienteExiste == null)
+                {
+                    var cliente = _mapper.Map<CriarClienteCommand>(vendaDto);
+
+                    // Se não for admin, definir vendedor como o usuário logado
+                    if (!await IsAdmin())
+                    {
+                        cliente.VendedorId = (UsuarioId == Guid.Empty) ? null : UsuarioId;
+                    }
+
+                    var rsCliente = await _mediator.Send(cliente);
+                    if (!rsCliente.Status)
+                        return CustomResponse();
+                }
+
+                var command = _mapper.Map<ProcessarVendaCommand>(vendaDto);
+                command.ClienteId = clienteExiste.Id;
+
+                var rsVenda = await _mediator.Send(command);
                 
-                var vendaStoreDto = _mapper.Map<VendaStoreDto>(vendaDto);
-                
-                var resultado = await _vendaService.ProcessarVendaAsync(vendaStoreDto);
-                if (!resultado.Status) 
-                    throw new Exception(resultado.Mensagem);
-                
-                
-                // if (resultado.Sucesso)
-                // {
-                //     return Ok(resultado);
-                // }
-                // else
-                // {
-                //     return BadRequest(resultado);
-                // }
+                if (!rsVenda.Status)
+                    return CustomResponse();
+
+                return Ok();
             }
             catch (Exception ex)
             {
-                NotificarErro("Mensagem",  ex.Message);
-                // await _unitOfWork.RollbackAsync();
+                NotificarErro("Mensagem", ex.Message);
                 return CustomResponse();
-                // return StatusCode(500, new { error = "Erro interno ao processar venda", details = ex.Message });
             }
         }
 

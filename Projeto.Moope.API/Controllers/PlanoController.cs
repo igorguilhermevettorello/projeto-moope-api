@@ -56,7 +56,7 @@ namespace Projeto.Moope.API.Controllers
             if (!result.Status) return CustomResponse();
             return CreatedAtAction(nameof(result.Dados.Id), new { id = result.Dados.Codigo }, _mapper.Map<PlanoDto>(result.Dados));
         }
-
+        
         [HttpPut("{codigo}")]
         public async Task<IActionResult> AtualizarAsync(string codigo, [FromBody] PlanoDto planoDto)
         {

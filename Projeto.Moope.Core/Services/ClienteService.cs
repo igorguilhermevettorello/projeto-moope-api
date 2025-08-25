@@ -15,16 +15,19 @@ namespace Projeto.Moope.Core.Services
         private readonly IClienteRepository _clienteRepository;
         private readonly IPessoaFisicaRepository _pessoaFisicaRepository;
         private readonly IPessoaJuridicaRepository _pessoaJuridicaRepository;
+        private readonly IIdentityUserService _identityUserService;
 
         public ClienteService(
             IClienteRepository clienteRepository,
             IPessoaFisicaRepository pessoaFisicaRepository,
             IPessoaJuridicaRepository pessoaJuridicaRepository,
+            IIdentityUserService identityUserService,
             INotificador notificador) : base(notificador)
         {
             _clienteRepository = clienteRepository;
             _pessoaFisicaRepository = pessoaFisicaRepository;
             _pessoaJuridicaRepository = pessoaJuridicaRepository;
+            _identityUserService = identityUserService;
         }
 
         public async Task<Cliente> BuscarPorIdAsNotrackingAsync(Guid id)
@@ -35,6 +38,34 @@ namespace Projeto.Moope.Core.Services
         public async Task<Cliente> BuscarPorIdAsync(Guid id)
         {
             return await _clienteRepository.BuscarPorIdAsync(id);
+        }
+
+        public async Task<Cliente> BuscarPorEmailAsync(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                Notificar("Email", "Email é obrigatório para busca");
+                return null;
+            }
+
+            try
+            {
+                // Buscar usuário no Identity pelo email
+                var identityUser = await _identityUserService.BuscarPorEmailAsync(email);
+                if (identityUser == null)
+                {
+                    return null; // Usuário não encontrado no Identity
+                }
+
+                // Usar o ID do usuário Identity para buscar o cliente
+                var cliente = await _clienteRepository.BuscarPorIdAsync(identityUser.Id);
+                return cliente;
+            }
+            catch (Exception ex)
+            {
+                Notificar("Email", $"Erro ao buscar cliente por email: {ex.Message}");
+                return null;
+            }
         }
 
         public async Task<IEnumerable<Cliente>> BuscarTodosAsync()
@@ -82,10 +113,19 @@ namespace Projeto.Moope.Core.Services
                     Notificar("CpfCnpj", "Cpf já cadastrado");
                     return new Result<Cliente>() { Status = false, Mensagem = "Dados do cliente são inválidos" };
                 }
+
+                try
+                {
+                    pessoaFisica.Cpf = Documentos.OnlyDigits(pessoaFisica.Cpf);
+                    pessoaFisica.Created = DateTime.UtcNow;
+                    var _ = await _pessoaFisicaRepository.SalvarAsync(pessoaFisica);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    throw;
+                }
                 
-                pessoaFisica.Cpf = Documentos.OnlyDigits(pessoaFisica.Cpf);
-                pessoaFisica.Created = DateTime.UtcNow;
-                var _ = await _pessoaFisicaRepository.SalvarAsync(pessoaFisica);
             }
                 
             var entidade = await _clienteRepository.SalvarAsync(cliente);

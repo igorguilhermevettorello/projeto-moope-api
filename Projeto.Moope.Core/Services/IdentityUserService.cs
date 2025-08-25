@@ -15,7 +15,6 @@ namespace Projeto.Moope.Core.Services
         private readonly IClienteRepository _clienteRepository;
         private readonly IVendedorRepository _vendedorRepository;
         private readonly RoleManager<IdentityRole<Guid>> _roleManager;
-        private readonly SignInManager<IdentityUser<Guid>> _signInManager;
         private readonly INotificador _notificador;
 
         public IdentityUserService(
@@ -23,14 +22,12 @@ namespace Projeto.Moope.Core.Services
             IClienteRepository clienteRepository,
             IVendedorRepository vendedorRepository,
             RoleManager<IdentityRole<Guid>> roleManager,
-            SignInManager<IdentityUser<Guid>> signInManager,
             INotificador notificador) : base(notificador)
         {
             _userManager = userManager;
             _clienteRepository = clienteRepository;
             _vendedorRepository = vendedorRepository;
             _roleManager = roleManager;
-            _signInManager = signInManager;
             _notificador = notificador;
         }
 

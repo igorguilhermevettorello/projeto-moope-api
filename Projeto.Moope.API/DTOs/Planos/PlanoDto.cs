@@ -5,7 +5,7 @@ namespace Projeto.Moope.API.DTOs.Planos
 {
     public class PlanoDto
     {
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
         [Required(ErrorMessage = "O campo Código é obrigatório")]
         public string Codigo { get; set; }
         [Required(ErrorMessage = "O campo Descrição é obrigatório")]

@@ -54,5 +54,10 @@ namespace Projeto.Moope.Infrastructure.Repositories
         {
             return await _context.PessoasJuridicas.FirstOrDefaultAsync(pj => pj.Cnpj.Equals(cnpj));
         }
+
+        public async Task<PessoaJuridica> BuscarPorIdAsNotrackingAsync(Guid id)
+        {
+            return await _context.PessoasJuridicas.AsNoTracking().FirstOrDefaultAsync(pj => pj.Id == id);
+        }
     }
 } 

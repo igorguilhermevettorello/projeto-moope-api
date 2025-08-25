@@ -8,6 +8,13 @@ namespace Projeto.Moope.Core.Interfaces.Pagamentos
     {
         Task<CelPayResponseDto> ProcessarPagamentoAsync(VendaStoreDto vendaDto);
         Task<CelPayResponseDto> ConsultarTransacaoAsync(string transactionId);
+        
+        // Métodos para subscription
+        Task<CelPaySubscriptionResponseDto> CriarSubscriptionComPlanoAsync(CelPaySubscriptionRequestDto subscriptionDto);
+        Task<CelPaySubscriptionResponseDto> ConsultarSubscriptionAsync(string subscriptionId);
+        Task<CelPaySubscriptionResponseDto> CancelarSubscriptionAsync(CelPayCancelSubscriptionDto cancelDto);
+        Task<CelPaySubscriptionResponseDto> AtualizarSubscriptionAsync(CelPayUpdateSubscriptionDto updateDto);
+        
         string NomeGateway { get; }
     }
 }

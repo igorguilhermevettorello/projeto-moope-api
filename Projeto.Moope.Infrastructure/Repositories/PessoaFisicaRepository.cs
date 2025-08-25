@@ -53,5 +53,10 @@ namespace Projeto.Moope.Infrastructure.Repositories
         {
             return await _context.PessoasFisicas.FirstOrDefaultAsync(pf => pf.Cpf.Equals(cpf));
         }
+
+        public async Task<PessoaFisica> BuscarPorIdAsNotrackingAsync(Guid id)
+        {
+            return await _context.PessoasFisicas.AsNoTracking().FirstOrDefaultAsync(pf => pf.Id == id);
+        }
     }
 } 

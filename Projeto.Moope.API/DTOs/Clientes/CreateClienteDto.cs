@@ -25,7 +25,6 @@ namespace Projeto.Moope.API.DTOs.Clientes
 
         public bool Ativo { get; set; } = true;
 
-        [Required(ErrorMessage = "O campo Endereco é obrigatório")]
         public CreateEnderecoDto? Endereco { get; set; }
 
         [Required(ErrorMessage = "O campo Senha é obrigatório")]

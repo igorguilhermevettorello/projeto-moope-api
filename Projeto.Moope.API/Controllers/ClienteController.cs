@@ -1,9 +1,12 @@
 using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Projeto.Moope.API.Controllers.Base;
 using Projeto.Moope.API.DTOs.Clientes;
+using Projeto.Moope.Core.Commands.Clientes.Atualizar;
+using Projeto.Moope.Core.Commands.Clientes.Criar;
 using Projeto.Moope.Core.Enums;
 using Projeto.Moope.Core.Interfaces.Identity;
 using Projeto.Moope.Core.Interfaces.Notifications;
@@ -16,7 +19,7 @@ namespace Projeto.Moope.API.Controllers
 {
     [ApiController]
     [Route("api/cliente")]
-    [Authorize]
+    //[Authorize]
     public class ClienteController : MainController
     {
         private readonly IClienteService _clienteService;
@@ -26,6 +29,7 @@ namespace Projeto.Moope.API.Controllers
         private readonly IPapelService _papelService;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMediator _mediator;
 
         public ClienteController(
             IClienteService clienteService,
@@ -35,6 +39,7 @@ namespace Projeto.Moope.API.Controllers
             IPapelService papelService,
             IMapper mapper,
             IUnitOfWork unitOfWork,
+            IMediator mediator,
             INotificador notificador,
             IUser user) : base(notificador, user)
         {
@@ -45,6 +50,7 @@ namespace Projeto.Moope.API.Controllers
             _papelService = papelService;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _mediator = mediator;
         }
 
         [HttpGet]
@@ -74,16 +80,36 @@ namespace Projeto.Moope.API.Controllers
             return Ok(_mapper.Map<ListClienteDto>(cliente));
         }
 
+        [HttpGet("email/{email}")]
+        [Authorize(Roles = nameof(TipoUsuario.Administrador))]
+        [ProducesResponseType(typeof(ListClienteDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> BuscarPorEmailAsync(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                ModelState.AddModelError("Email", "Email é obrigatório");
+                return CustomResponse(ModelState);
+            }
+
+            var cliente = await _clienteService.BuscarPorEmailAsync(email);
+            if (cliente == null) 
+                return NotFound("Cliente não encontrado");
+            
+            return Ok(_mapper.Map<ListClienteDto>(cliente));
+        }
+
         [HttpPost]
-        [Authorize(Roles = $"{nameof(TipoUsuario.Vendedor)},{nameof(TipoUsuario.Administrador)}")]
+        //[Authorize(Roles = $"{nameof(TipoUsuario.Vendedor)},{nameof(TipoUsuario.Administrador)}")]
         [ProducesResponseType(typeof(CreateClienteDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> CriarAsync([FromBody] CreateClienteDto createClienteDto)
         {
-            var clienteId = Guid.NewGuid();
-            var usuarioExistente = false;
             if (createClienteDto == null)
             {
                 NotificarErro("Mensagem", "As informações do cliente não foram carregadas. Tente novamente.");
@@ -93,88 +119,26 @@ namespace Projeto.Moope.API.Controllers
             if (!ModelState.IsValid)
                 return CustomResponse(ModelState);
 
-            var identityUser = new IdentityUser<Guid>();
-            
-            await _unitOfWork.BeginTransactionAsync();
             try
             {
-                var cliente = _mapper.Map<Cliente>(createClienteDto);
-                var endereco = _mapper.Map<Endereco>(createClienteDto.Endereco);
-                var usuario =  _mapper.Map<Usuario>(createClienteDto);
-                var pessoaFisica = _mapper.Map<PessoaFisica>(createClienteDto);
-                var pessoaJuridica = _mapper.Map<PessoaJuridica>(createClienteDto);
+                var command = _mapper.Map<CriarClienteCommand>(createClienteDto);
                 
-                var rsIdentity = await _identityUserService.CriarUsuarioAsync(
-                    createClienteDto.Email, 
-                    createClienteDto.Senha, 
-                    telefone: createClienteDto.Telefone, 
-                    tipoUsuario: TipoUsuario.Cliente);
-
-                usuarioExistente = rsIdentity.UsuarioExiste; 
-                
-                if (!rsIdentity.Status) 
-                    throw new Exception(rsIdentity.Mensagem);
-
-                identityUser = (IdentityUser<Guid>)rsIdentity.Dados;
-                
-                if (rsIdentity.UsuarioExiste)
+                // Se não for admin, definir vendedor como o usuário logado
+                if (!await IsAdmin())
                 {
-                    cliente.Id = identityUser.Id;
-                    clienteId = identityUser.Id;
-                    var rsPapel = await _papelService.SalvarAsync(new Papel()
-                    {
-                        UsuarioId = identityUser.Id,
-                        TipoUsuario = TipoUsuario.Cliente,
-                        Created = DateTime.UtcNow
-                    });
-                    
-                    if (!rsPapel.Status) 
-                        throw new Exception(rsPapel.Mensagem);
-                    
-                    var rsCliente = await _clienteService.SalvarAsync(cliente);
-                    if (!rsCliente.Status) 
-                        throw new Exception(rsCliente.Mensagem);
+                    command.VendedorId = (UsuarioId == Guid.Empty) ? null : UsuarioId;
                 }
-                else
-                {
-                    var rsEndereco = await _enderecoService.SalvarAsync(endereco);
-                    if (!rsEndereco.Status) 
-                        throw new Exception(rsEndereco.Mensagem);
                 
-                    usuario.Id =  rsIdentity.Dados.Id;
-                    usuario.EnderecoId = rsEndereco.Dados.Id;
-                    usuario.TipoUsuario = TipoUsuario.Cliente;
+                var resultado = await _mediator.Send(command);
                 
-                    var rsUsuario = await _usuarioService.SalvarAsync(usuario);
-                    if (!rsUsuario.Status) 
-                        throw new Exception(rsUsuario.Mensagem);
-                
-                    clienteId = rsUsuario.Dados.Id;
-                    cliente.Id = rsUsuario.Dados.Id;
-                    pessoaFisica.Id = rsUsuario.Dados.Id;
-                    pessoaJuridica.Id = rsUsuario.Dados.Id;
-                    
-                    if (!await IsAdmin())
-                    {
-                        cliente.VendedorId = UsuarioId;
-                    }
-                    
-                    var rsCliente = await _clienteService.SalvarAsync(cliente, pessoaFisica, pessoaJuridica);
-                    if (!rsCliente.Status) 
-                        throw new Exception(rsCliente.Mensagem);    
-                }
+                if (!resultado.Status)
+                    return CustomResponse();
 
-                await _unitOfWork.CommitAsync();
-                
-                return Created(string.Empty, new { id = clienteId });
+                return Created(string.Empty, new { id = resultado.Dados });
             }
             catch (Exception ex)
             {
-                if (!usuarioExistente) 
-                    _identityUserService.RemoverAoFalharAsync(identityUser);
-                
-                NotificarErro("Mensagem",  ex.Message);
-                await _unitOfWork.RollbackAsync();
+                NotificarErro("Mensagem", ex.Message);
                 return CustomResponse();
             }
         }
@@ -202,55 +166,19 @@ namespace Projeto.Moope.API.Controllers
             if (!ModelState.IsValid) 
                 return CustomResponse(ModelState);
 
-            var clienteExistente = await _clienteService.BuscarPorIdAsNotrackingAsync(id);
-            if (clienteExistente == null)
-            {
-                ModelState.AddModelError("Mensagem", "Cliente não encontrado.");
-                return CustomResponse(ModelState);
-            }
-            
-            await _unitOfWork.BeginTransactionAsync();
             try
             {
-                var cliente = _mapper.Map<Cliente>(updateClienteDto);
-                var endereco = _mapper.Map<Endereco>(updateClienteDto.Endereco);
-                var usuario =  _mapper.Map<Usuario>(updateClienteDto);
-                var pessoaFisica = _mapper.Map<PessoaFisica>(updateClienteDto);
-                var pessoaJuridica = _mapper.Map<PessoaJuridica>(updateClienteDto);
-
-                var rsIdentity = await _identityUserService.AlterarUsuarioAsync(
-                    clienteExistente.Id,
-                    updateClienteDto.Email, 
-                    telefone: updateClienteDto.Telefone);
+                var command = _mapper.Map<AtualizarClienteCommand>(updateClienteDto);
+                var resultado = await _mediator.Send(command);
                 
-                if (!rsIdentity.Status) 
-                    throw new Exception(rsIdentity.Mensagem);
+                if (!resultado.Status)
+                    return CustomResponse();
 
-                var usuarioAuxiliar = await _usuarioService.BuscarPorIdAsNotrackingAsync(id);
-                endereco.Id = (Guid) usuarioAuxiliar.EnderecoId;
-                var rsEndereco = await _enderecoService.AtualizarAsync(endereco);
-                if (!rsEndereco.Status) 
-                    throw new Exception(rsEndereco.Mensagem);
-
-                usuario.Id = clienteExistente.Id;
-                usuario.TipoUsuario = TipoUsuario.Cliente;
-                var rsUsuario = await _usuarioService.AtualizarAsync(usuario);
-                if (!rsUsuario.Status) 
-                    throw new Exception(rsUsuario.Mensagem);
-                
-                cliente.Id = clienteExistente.Id;
-                var rsCliente = await _clienteService.AtualizarAsync(cliente, pessoaFisica, pessoaJuridica);
-                if (!rsCliente.Status) 
-                    throw new Exception(rsCliente.Mensagem);
-
-                await _unitOfWork.CommitAsync();
-                
                 return NoContent();
             }
             catch (Exception ex)
             {
                 NotificarErro("Mensagem", ex.Message);
-                await _unitOfWork.RollbackAsync();
                 return CustomResponse();
             }
         }

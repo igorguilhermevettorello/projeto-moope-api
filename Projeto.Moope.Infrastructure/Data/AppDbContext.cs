@@ -17,6 +17,7 @@ namespace Projeto.Moope.Infrastructure.Data
         public DbSet<Transacao> Transacoes { get; set; }
         public DbSet<Plano> Planos { get; set; }
         public DbSet<Papel> Papeis { get; set; }
+        public DbSet<Email> Emails { get; set; }
         
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)

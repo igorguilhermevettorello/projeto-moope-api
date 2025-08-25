@@ -41,6 +41,99 @@ namespace Projeto.Moope.Infrastructure.Migrations._002_business
                     b.ToTable("Cliente");
                 });
 
+            modelBuilder.Entity("Projeto.Moope.Core.Models.Email", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Assunto")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<Guid?>("ClienteId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Copia")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<string>("CopiaOculta")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<string>("Corpo")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("DadosAdicionais")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("DataEnvio")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DataProgramada")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Destinatario")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<bool>("EhHtml")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("MensagemErro")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("NomeDestinatario")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("NomeRemetente")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Prioridade")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Remetente")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TentativasEnvio")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tipo")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime?>("UltimaTentativa")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("UsuarioId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClienteId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Emails");
+                });
+
             modelBuilder.Entity("Projeto.Moope.Core.Models.Endereco", b =>
                 {
                     b.Property<Guid>("Id")
@@ -120,19 +213,22 @@ namespace Projeto.Moope.Infrastructure.Migrations._002_business
                     b.Property<Guid>("ClienteId")
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("CodigoPlano")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("DescricaoPlano")
+                    b.Property<string>("PlanoCodigo")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PlanoDescricao")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<Guid>("PlanoId")
                         .HasColumnType("char(36)");
+
+                    b.Property<decimal>("PlanoValor")
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<int>("Quantidade")
                         .HasColumnType("int");
@@ -147,17 +243,12 @@ namespace Projeto.Moope.Infrastructure.Migrations._002_business
                     b.Property<DateTime>("Updated")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<decimal>("ValorUnitarioPlano")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<Guid>("VendedorId")
+                    b.Property<Guid?>("VendedorId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ClienteId");
-
-                    b.HasIndex("PlanoId");
 
                     b.HasIndex("VendedorId");
 
@@ -344,6 +435,21 @@ namespace Projeto.Moope.Infrastructure.Migrations._002_business
                     b.Navigation("Vendedor");
                 });
 
+            modelBuilder.Entity("Projeto.Moope.Core.Models.Email", b =>
+                {
+                    b.HasOne("Projeto.Moope.Core.Models.Cliente", "Cliente")
+                        .WithMany()
+                        .HasForeignKey("ClienteId");
+
+                    b.HasOne("Projeto.Moope.Core.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId");
+
+                    b.Navigation("Cliente");
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("Projeto.Moope.Core.Models.Papel", b =>
                 {
                     b.HasOne("Projeto.Moope.Core.Models.Usuario", "Usuario")
@@ -361,21 +467,11 @@ namespace Projeto.Moope.Infrastructure.Migrations._002_business
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Projeto.Moope.Core.Models.Plano", "Plano")
-                        .WithMany()
-                        .HasForeignKey("PlanoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Projeto.Moope.Core.Models.Vendedor", "Vendedor")
                         .WithMany()
-                        .HasForeignKey("VendedorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("VendedorId");
 
                     b.Navigation("Cliente");
-
-                    b.Navigation("Plano");
 
                     b.Navigation("Vendedor");
                 });

@@ -3,20 +3,21 @@ using Projeto.Moope.API.DTOs.Clientes;
 using Projeto.Moope.API.DTOs.Planos;
 using Projeto.Moope.API.DTOs.Validators;
 using Projeto.Moope.API.Utils;
-using Projeto.Moope.Core.DTOs.Validators;
-using Projeto.Moope.Core.DTOs.Vendas;
+using Projeto.Moope.Core.Commands.Clientes.Atualizar;
+using Projeto.Moope.Core.Commands.Emails;
+using Projeto.Moope.Core.Commands.Vendas;
 using Projeto.Moope.Core.Interfaces.Identity;
 using Projeto.Moope.Core.Interfaces.Notifications;
 using Projeto.Moope.Core.Interfaces.Repositories;
 using Projeto.Moope.Core.Interfaces.Services;
 using Projeto.Moope.Core.Interfaces.UnitOfWork;
-using Projeto.Moope.Core.Interfaces.Pagamentos;
+using Projeto.Moope.Core.Interfaces.Utils;
 using Projeto.Moope.Core.Notifications;
 using Projeto.Moope.Core.Services;
+using Projeto.Moope.Core.Utils;
 using Projeto.Moope.Infrastructure.Data;
 using Projeto.Moope.Infrastructure.Data.UnitOfWork;
 using Projeto.Moope.Infrastructure.Repositories;
-using Projeto.Moope.Infrastructure.Services.Pagamentos;
 
 namespace Projeto.Moope.API.Configurations
 {
@@ -28,6 +29,7 @@ namespace Projeto.Moope.API.Configurations
             RegisterRepositories(services);
             RegisterServices(services);
             RegisterValidators(services);
+            RegisterMediatR(services);
             return services;
         }
 
@@ -38,6 +40,7 @@ namespace Projeto.Moope.API.Configurations
             service.Configure<JwtSettings>(configuration.GetSection("Jwt"));
             service.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             service.AddScoped<IUser, AspNetUser>();
+            service.AddScoped<IPasswordGenerator, PasswordGenerator>();
         }
 
         private static void RegisterRepositories(IServiceCollection service)
@@ -52,6 +55,7 @@ namespace Projeto.Moope.API.Configurations
             service.AddScoped<IPapelRepository, PapelRepository>();
             service.AddScoped<IPedidoRepository, PedidoRepository>();
             service.AddScoped<ITransacaoRepository, TransacaoRepository>();
+            service.AddScoped<IEmailRepository, EmailRepository>();
             service.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
@@ -65,6 +69,7 @@ namespace Projeto.Moope.API.Configurations
             service.AddScoped<IUsuarioService, UsuarioService>();
             service.AddScoped<IIdentityUserService, IdentityUserService>();
             service.AddScoped<IVendaService, VendaService>();
+            service.AddScoped<IEmailService, EmailService>();
             service.AddHttpClient<IGoogleRecaptchaService, GoogleRecaptchaService>();
         }
 
@@ -74,6 +79,13 @@ namespace Projeto.Moope.API.Configurations
             service.AddScoped<IValidator<CreateClienteDto>, CreateClienteDtoValidator>();
             service.AddScoped<IValidator<UpdateClienteDto>, UpdateClienteDtoValidator>();
             // service.AddScoped<IValidator<CreateVendaDto>, CreateVendaDtoValidator>();
+        }
+
+        private static void RegisterMediatR(IServiceCollection service)
+        {
+            service.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ProcessarVendaCommand).Assembly));
+            service.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(SalvarEmailCommand).Assembly));
+            service.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AtualizarClienteCommand).Assembly));
         }
     }
 }

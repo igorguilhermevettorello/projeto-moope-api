@@ -16,7 +16,7 @@ namespace Projeto.Moope.API.Controllers
 {
     [ApiController]
     [Route("api/vendedor")]
-    [Authorize]
+    //[Authorize]
     public class VendedorController : MainController
     {
         private readonly IVendedorService _vendedorService;

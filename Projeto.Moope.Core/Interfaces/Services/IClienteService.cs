@@ -8,6 +8,7 @@ namespace Projeto.Moope.Core.Interfaces.Services
     {
         Task<Cliente> BuscarPorIdAsNotrackingAsync(Guid id);
         Task<Cliente> BuscarPorIdAsync(Guid id);
+        Task<Cliente> BuscarPorEmailAsync(string email);
         Task<IEnumerable<Cliente>> BuscarTodosAsync();
         Task<Result<Cliente>> SalvarAsync(Cliente cliente);
         Task<Result<Cliente>> SalvarAsync(Cliente cliente, PessoaFisica pessoaFisica, PessoaJuridica pessoaJuridica);

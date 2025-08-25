@@ -6,6 +6,7 @@ using Projeto.Moope.Core.Interfaces.Repositories;
 using Projeto.Moope.Core.Interfaces.Services;
 using Projeto.Moope.Core.Interfaces.UnitOfWork;
 using Projeto.Moope.Core.Models;
+using Projeto.Moope.Core.Models.Validators.Base;
 using Projeto.Moope.Core.Services.Base;
 
 namespace Projeto.Moope.Core.Services
@@ -39,7 +40,7 @@ namespace Projeto.Moope.Core.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<VendaResponseDto> ProcessarVendaAsync(VendaStoreDto vendaDto)
+        public async Task<Result<Pedido>> ProcessarVendaAsync(VendaStoreDto vendaDto)
         {
             try
             {
@@ -53,31 +54,31 @@ namespace Projeto.Moope.Core.Services
                 if (plano == null)
                 {
                     Notificar("Mensagem","Plano não encontrado");
-                    return CriarRespostaErro("Plano não encontrado");
+                    return new Result<Pedido>() { Status = false, Mensagem = "Dados do plano são inválidos" };
                 }
 
                 // Validar se o plano está ativo
                 if (!plano.Status)
                 {
                     Notificar("Mensagem","Plano inativo");
-                    return CriarRespostaErro("Plano inativo");
+                    return new Result<Pedido>() { Status = false, Mensagem = "Dados do plano são inválidos" };
                 }
 
                 // Criar ou buscar cliente
                 var cliente = await CriarOuBuscarClienteAsync(vendaDto);
                 if (cliente == null)
                 {
-                    return CriarRespostaErro("Erro ao processar dados do cliente");
+                    Notificar("NomeCliente", "Falha ao processar dados do cliente");
+                    return new Result<Pedido>() { Status = false, Mensagem = "Falha ao processar dados do cliente" };
                 }
 
-                // Calcular total baseado no plano e quantidade
                 var totalCalculado = plano.Valor * vendaDto.Quantidade;
 
                 // Validar se o valor informado corresponde ao calculado
                 if (vendaDto.Valor != totalCalculado)
                 {
                     Notificar("Mensagem","Valor informado não corresponde ao valor calculado do plano");
-                    return CriarRespostaErro("Valor informado não corresponde ao valor calculado do plano");
+                    return new Result<Pedido>() { Status = false, Mensagem = "Falha Valor informado não corresponde ao valor calculado do plano" };
                 }
 
                 // Criar pedido com snapshot do plano
@@ -125,24 +126,30 @@ namespace Projeto.Moope.Core.Services
                     await _transacaoRepository.SalvarAsync(transacao);
                     //await _unitOfWork.SaveChangesAsync();
 
-                    return new VendaResponseDto
-                    {
-                        Id = pedido.Id,
-                        Status = "APROVADA",
-                        Mensagem = "Venda processada com sucesso",
-                        CodigoTransacao = resultadoPagamento.Id,
-                        DataProcessamento = DateTime.UtcNow,
-                        Valor = totalCalculado,
-                        NomeCliente = vendaDto.NomeCliente,
-                        Email = vendaDto.Email,
-                        VendedorId = vendaDto.VendedorId,
-                        PlanoId = vendaDto.PlanoId,
-                        NomePlano = pedido.PlanoDescricao,
-                        CodigoPlano = pedido.PlanoCodigo,
-                        ValorUnitarioPlano = pedido.PlanoValor,
-                        Quantidade = vendaDto.Quantidade,
-                        Sucesso = true
+                    return new Result<Pedido>() { 
+                        Status = false, 
+                        Mensagem = "Compra efetuada com sucesso",
+                        Dados = pedido
                     };
+
+                    //return new VendaResponseDto
+                    //{
+                    //    Id = pedido.Id,
+                    //    Status = "APROVADA",
+                    //    Mensagem = "Venda processada com sucesso",
+                    //    CodigoTransacao = resultadoPagamento.Id,
+                    //    DataProcessamento = DateTime.UtcNow,
+                    //    Valor = totalCalculado,
+                    //    NomeCliente = vendaDto.NomeCliente,
+                    //    Email = vendaDto.Email,
+                    //    VendedorId = vendaDto.VendedorId,
+                    //    PlanoId = vendaDto.PlanoId,
+                    //    NomePlano = pedido.PlanoDescricao,
+                    //    CodigoPlano = pedido.PlanoCodigo,
+                    //    ValorUnitarioPlano = pedido.PlanoValor,
+                    //    Quantidade = vendaDto.Quantidade,
+                    //    Sucesso = true
+                    //};
                 }
                 else
                 {
@@ -150,29 +157,41 @@ namespace Projeto.Moope.Core.Services
                     pedido.Updated = DateTime.UtcNow;
                     //await _unitOfWork.SaveChangesAsync();
 
-                    return new VendaResponseDto
-                    {
-                        Id = pedido.Id,
-                        Status = "REJEITADA",
-                        Mensagem = resultadoPagamento.ErrorMessage ?? "Pagamento rejeitado",
-                        DataProcessamento = DateTime.UtcNow,
-                        Valor = totalCalculado,
-                        NomeCliente = vendaDto.NomeCliente,
-                        Email = vendaDto.Email,
-                        VendedorId = vendaDto.VendedorId,
-                        PlanoId = vendaDto.PlanoId,
-                        NomePlano = pedido.PlanoDescricao,
-                        CodigoPlano = pedido.PlanoCodigo,
-                        ValorUnitarioPlano = pedido.PlanoValor,
-                        Quantidade = vendaDto.Quantidade,
-                        Sucesso = false
+                    Notificar("Mensagem", resultadoPagamento.ErrorMessage ?? "Pagamento rejeitado");
+                    return new Result<Pedido>() { 
+                        Status = false, 
+                        Mensagem = resultadoPagamento.ErrorMessage ?? "Pagamento rejeitado"
                     };
+
+                    //return new VendaResponseDto
+                    //{
+                    //    Id = pedido.Id,
+                    //    Status = "REJEITADA",
+                    //    Mensagem = resultadoPagamento.ErrorMessage ?? "Pagamento rejeitado",
+                    //    DataProcessamento = DateTime.UtcNow,
+                    //    Valor = totalCalculado,
+                    //    NomeCliente = vendaDto.NomeCliente,
+                    //    Email = vendaDto.Email,
+                    //    VendedorId = vendaDto.VendedorId,
+                    //    PlanoId = vendaDto.PlanoId,
+                    //    NomePlano = pedido.PlanoDescricao,
+                    //    CodigoPlano = pedido.PlanoCodigo,
+                    //    ValorUnitarioPlano = pedido.PlanoValor,
+                    //    Quantidade = vendaDto.Quantidade,
+                    //    Sucesso = false
+                    //};
                 }
             }
             catch (Exception ex)
             {
                 Notificar("Mensagem",$"Erro ao processar venda: {ex.Message}");
-                return CriarRespostaErro($"Erro interno: {ex.Message}");
+                //return CriarRespostaErro($"Erro interno: {ex.Message}");
+
+                return new Result<Pedido>()
+                {
+                    Status = false,
+                    Mensagem = $"Erro ao processar venda: {ex.Message}"
+                };
             }
         }
 
